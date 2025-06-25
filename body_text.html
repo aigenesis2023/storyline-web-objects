@@ -1,67 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Body Text</title>
-    <!-- CRITICAL: Load Poppins font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- General Body/HTML Styling for the iframe content --- */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%; /* Ensure html and body fill the entire iframe */
-            height: 100%; /* Ensure html and body fill the entire iframe */
-            overflow: hidden; /* Prevents scrollbars within the iframe */
-            background-color: transparent; /* Makes the iframe background transparent in Storyline */
-            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Body Text</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: transparent;
+      box-sizing: border-box;
+    }
 
-        /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
-        body {
-            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
-            font-size: 10.5px;
-            color: #FFFFFF; /* Set text color to white for your dark Storyline background */
-            line-height: 1.4;
-            text-align: left;
-            word-wrap: break-word; /* Ensures long words wrap correctly */
-            padding: 10px; /* Add a little padding so text isn't stuck to edges */
-        }
+    body {
+      font-family: 'Poppins Light', 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: #FFFFFF;
+      line-height: 1.4;
+      text-align: left;
+      word-wrap: break-word;
+      padding: 10px;
+    }
 
-        /* --- Dynamic Content Div Styling --- */
-        #dynamicBodyContent {
-            width: 100%; /* Make this div take the full width of its parent (body) */
-            height: 100%; /* Make this div take the full height of its parent (body) */
-            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
-        }
-    </style>
+    #dynamicBodyContent {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
-    <!-- This is the HTML element where your dynamic body text will be placed. -->
-    <!-- It is empty initially, and will be filled by the Storyline JavaScript. -->
-    <div id="dynamicBodyContent"></div>
+  <div id="dynamicBodyContent">✅ Web object loaded. Waiting for content...</div>
 
-    <script>
-        // This script listens for messages sent from the parent window (your Storyline course).
-        window.addEventListener('message', function(event) {
-            // Security check: Ensure the message is from the same origin as the iframe itself.
-            if (event.origin === new URL(document.location.href).origin) {
-                // Check if the received message has the expected 'type' and 'target' identifiers.
-                if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
-                    // Get a reference to the specific div where the text will be updated.
-                    const contentDiv = document.getElementById('dynamicBodyContent');
-                    if (contentDiv) {
-                        // Update the text content of the div with the text received from Storyline.
-                        contentDiv.innerText = event.data.text;
-                        console.log('Web Object: Successfully updated body text.');
-                        document.body.style.color = '#FFFFFF'; // Ensure color is white
-                    } else {
-                        console.error('Web Object: #dynamicBodyContent div not found.');
-                    }
-                }
-            }
-        });
-    </script>
+  <script>
+    window.addEventListener('message', function(event) {
+      if (event.origin === new URL(document.location.href).origin) {
+        if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
+          const contentDiv = document.getElementById('dynamicBodyContent');
+          if (contentDiv) {
+            contentDiv.innerText = event.data.text;
+            console.log('Web Object: Successfully updated body text.');
+            document.body.style.color = '#FFFFFF';
+          } else {
+            console.error('Web Object: #dynamicBodyContent div not found.');
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
