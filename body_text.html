@@ -11,12 +11,12 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: transparent;
+            background-color: transparent; /* This should make the iframe background transparent in Storyline */
 
-            /* --- ADJUSTED STYLING WITH POPPINS AND COLOR --- */
+            /* --- ADJUSTED STYLING WITH POPPINS AND TEMPORARY BLACK COLOR --- */
             font-family: 'Poppins Light', 'Poppins', sans-serif; /* Try 'Poppins Light', then 'Poppins', then generic sans-serif */
             font-size: 10.5px;
-            color: #FFFFFF; /* Confirmed: White text */
+            color: #000000; /* TEMPORARY: Set to black so "Hello World" is visible on white browser background */
             line-height: 1.4;
             text-align: left;
 
@@ -24,22 +24,33 @@
             box-sizing: border-box;
         }
         #dynamicBodyContent {
-            width: 100%;
-            height: 100%;
+            width: 100%; /* Make this div take the full width of the iframe */
+            height: 100%; /* Make this div take the full height of the iframe */
             box-sizing: border-box;
+            padding: 10px; /* Add a little padding so text isn't stuck to edges */
         }
     </style>
 </head>
 <body>
-    <div id="dynamicBodyContent"></div>
+    <!-- This is the HTML element where your dynamic body text will be placed -->
+    <!-- For testing, we've added "Hello from Web Object!" directly here. -->
+    <div id="dynamicBodyContent">Hello from Web Object!</div>
+
     <script>
+        // This script listens for messages from the parent window (your Storyline course)
         window.addEventListener('message', function(event) {
-            if (event.origin === window.location.origin) {
+            // Security check: Ensure the message is from the correct origin.
+            // For Storyline published output, this usually matches the iframe's own origin.
+            if (event.origin === new URL(document.location.href).origin) {
+                // Check if the message type is 'updateText' and targets 'bodyText'
                 if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
                     const contentDiv = document.getElementById('dynamicBodyContent');
                     if (contentDiv) {
+                        // Update the text content of the div
                         contentDiv.innerText = event.data.text;
                         console.log('Web Object: Successfully updated body text.');
+                        // After receiving content, change color back to white for Storyline
+                        document.body.style.color = '#FFFFFF'; // Change back to white after successful update
                     } else {
                         console.error('Web Object: #dynamicBodyContent div not found.');
                     }
