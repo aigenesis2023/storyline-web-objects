@@ -1,53 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dynamic Body Text</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Dynamic Web Object</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: black; /* ✅ Set background to black */
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      font-size: 10.5px;
-      color: white; /* ✅ Set text color to white */
-      line-height: 1.4;
-      text-align: left;
-      word-wrap: break-word;
-      padding: 10px;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
-
     #dynamicBodyContent {
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
+      font-size: 1.1em;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <div id="dynamicBodyContent">✅ Web object loaded. Waiting for content...</div>
+  <div id="dynamicBodyContent">
+    ✅ Web object loaded. Waiting for content...
+  </div>
 
   <script>
-    window.addEventListener('message', function(event) {
-      if (event.origin === new URL(document.location.href).origin) {
-        if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
-          const contentDiv = document.getElementById('dynamicBodyContent');
-          if (contentDiv) {
-            contentDiv.innerText = event.data.text;
-            console.log('Web Object: Successfully updated body text.');
-          } else {
-            console.error('Web Object: #dynamicBodyContent div not found.');
-          }
-        }
+    window.addEventListener("message", function(event) {
+      if (event.data && event.data.type === "updateText" && event.data.target === "bodyText") {
+        const container = document.getElementById("dynamicBodyContent");
+        container.textContent = event.data.text;
       }
     });
   </script>
