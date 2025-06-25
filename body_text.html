@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Body Text</title>
+    <!-- CRITICAL: Load Poppins font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: transparent;
+
+            /* --- ADJUSTED STYLING WITH POPPINS AND COLOR --- */
+            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Try 'Poppins Light', then 'Poppins', then generic sans-serif */
+            font-size: 10.5px;
+            color: #FFFFFF; /* Confirmed: White text */
+            line-height: 1.4;
+            text-align: left;
+
+            word-wrap: break-word;
+            box-sizing: border-box;
+        }
+        #dynamicBodyContent {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="dynamicBodyContent"></div>
+    <script>
+        window.addEventListener('message', function(event) {
+            if (event.origin === window.location.origin) {
+                if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
+                    const contentDiv = document.getElementById('dynamicBodyContent');
+                    if (contentDiv) {
+                        contentDiv.innerText = event.data.text;
+                        console.log('Web Object: Successfully updated body text.');
+                    } else {
+                        console.error('Web Object: #dynamicBodyContent div not found.');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
