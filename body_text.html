@@ -8,21 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- General Body/HTML Styling for the iframe content --- */
+        /* Force html and body to fill the entire iframe's dimensions */
         html, body {
             margin: 0;
             padding: 0;
-            width: 100%; /* Force html and body to fill the entire iframe */
-            height: 100%; /* Force html and body to fill the entire iframe */
+            width: 100%;
+            height: 100%;
             overflow: hidden; /* Prevents scrollbars within the iframe */
             background-color: transparent; /* Makes the iframe background transparent in Storyline */
             box-sizing: border-box; /* Includes padding/border in the element's total width/height */
         }
 
-        /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
+        /* --- ADJUSTED STYLING WITH POPPINS AND BRIGHT GREEN COLOR --- */
         body {
             font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
             font-size: 10.5px;
-            color: #FFFFFF; /* Set text color to white for your dark Storyline background */
+            color: #00FF00; /* TEMPORARY: BRIGHT GREEN text for maximum visibility */
             line-height: 1.4;
             text-align: left;
             word-wrap: break-word; /* Ensures long words wrap correctly */
@@ -38,24 +39,23 @@
     </style>
 </head>
 <body>
-    <!-- This is the HTML element where your dynamic body text will be placed. -->
-    <!-- It is empty initially, and will be filled by the Storyline JavaScript. -->
-    <div id="dynamicBodyContent"></div>
+    <!-- For this test, we've added "Hello from Web Object!" directly here. -->
+    <!-- We expect this text to be visible if the iframe renders at a proper size. -->
+    <div id="dynamicBodyContent">Hello from Web Object!</div>
 
     <script>
-        // This script listens for messages sent from the parent window (your Storyline course).
+        // This script listens for messages from the parent window (Storyline).
+        // For this "Hello World" test, it's not strictly needed for display,
+        // but it's part of the full intended functionality.
         window.addEventListener('message', function(event) {
-            // Security check: Ensure the message is from the same origin as the iframe itself.
             if (event.origin === new URL(document.location.href).origin) {
-                // Check if the received message has the expected 'type' and 'target' identifiers.
                 if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
-                    // Get a reference to the specific div where the text will be updated.
                     const contentDiv = document.getElementById('dynamicBodyContent');
                     if (contentDiv) {
-                        // Update the text content of the div with the text received from Storyline.
                         contentDiv.innerText = event.data.text;
                         console.log('Web Object: Successfully updated body text.');
-                        document.body.style.color = '#FFFFFF'; // Ensure color is white
+                        // After receiving content, change color back to white for Storyline
+                        document.body.style.color = '#FFFFFF';
                     } else {
                         console.error('Web Object: #dynamicBodyContent div not found.');
                     }
