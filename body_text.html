@@ -1,1 +1,48 @@
-you give me all this code but a simple text entry works lol
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Body Text</title>
+    <!-- CRITICAL: Load Poppins font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- General Body/HTML Styling for the iframe content --- */
+        /* Force html and body to fill the entire iframe's dimensions */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars within the iframe */
+            background-color: transparent; /* Makes the iframe background transparent in Storyline */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+        }
+
+        /* --- ADJUSTED STYLING WITH POPPINS AND BRIGHT GREEN COLOR --- */
+        body {
+            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
+            font-size: 10.5px;
+            color: #00FF00; /* TEMPORARY: BRIGHT GREEN text for maximum visibility */
+            line-height: 1.4;
+            text-align: left;
+            word-wrap: break-word; /* Ensures long words wrap correctly */
+            padding: 10px; /* Add a little padding so text isn't stuck to edges */
+        }
+
+        /* --- Dynamic Content Div Styling --- */
+        #dynamicBodyContent {
+            width: 100%; /* Make this div take the full width of its parent (body) */
+            height: 100%; /* Make this div take the full height of its parent (body) */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+        }
+    </style>
+</head>
+<body>
+    <!-- For this test, we've added "Hello from Web Object!" directly here. -->
+    <!-- We expect this text to be visible if the iframe renders at a proper size. -->
+    <div id="dynamicBodyContent">Hello from Web Object!</div>
+
+    <!-- The JavaScript listener for postMessage is REMOVED for this test to isolate sizing issues. -->
+</body>
+</html>
