@@ -8,22 +8,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- General Body/HTML Styling for the iframe content --- */
-        /* Force html and body to fill the entire iframe's dimensions */
         html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
+            width: 100%; /* Ensure html and body fill the entire iframe */
+            height: 100%; /* Ensure html and body fill the entire iframe */
             overflow: hidden; /* Prevents scrollbars within the iframe */
             background-color: transparent; /* Makes the iframe background transparent in Storyline */
             box-sizing: border-box; /* Includes padding/border in the element's total width/height */
         }
 
-        /* --- ADJUSTED STYLING WITH POPPINS AND BRIGHT GREEN COLOR --- */
+        /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
         body {
             font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
             font-size: 10.5px;
-            color: #00FF00; /* TEMPORARY: BRIGHT GREEN text for maximum visibility */
+            color: #FFFFFF; /* Set text color to white for your dark Storyline background */
             line-height: 1.4;
             text-align: left;
             word-wrap: break-word; /* Ensures long words wrap correctly */
@@ -39,10 +38,30 @@
     </style>
 </head>
 <body>
-    <!-- For this test, we've added "Hello from Web Object!" directly here. -->
-    <!-- We expect this text to be visible if the iframe renders at a proper size. -->
-    <div id="dynamicBodyContent">Hello from Web Object!</div>
+    <!-- This is the HTML element where your dynamic body text will be placed. -->
+    <!-- It is empty initially, and will be filled by the Storyline JavaScript. -->
+    <div id="dynamicBodyContent"></div>
 
-    <!-- The JavaScript listener for postMessage is REMOVED for this test to isolate sizing issues. -->
+    <script>
+        // This script listens for messages sent from the parent window (your Storyline course).
+        window.addEventListener('message', function(event) {
+            // Security check: Ensure the message is from the same origin as the iframe itself.
+            if (event.origin === new URL(document.location.href).origin) {
+                // Check if the received message has the expected 'type' and 'target' identifiers.
+                if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
+                    // Get a reference to the specific div where the text will be updated.
+                    const contentDiv = document.getElementById('dynamicBodyContent');
+                    if (contentDiv) {
+                        // Update the text content of the div with the text received from Storyline.
+                        contentDiv.innerText = event.data.text;
+                        console.log('Web Object: Successfully updated body text.');
+                        document.body.style.color = '#FFFFFF'; // Ensure color is white
+                    } else {
+                        console.error('Web Object: #dynamicBodyContent div not found.');
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
