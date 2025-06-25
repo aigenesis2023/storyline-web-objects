@@ -10,48 +10,50 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-color: transparent; /* This should make the iframe background transparent in Storyline */
+            overflow: hidden; /* Prevents scrollbars in the iframe */
+            background-color: transparent; /* Makes the iframe background transparent */
 
-            /* --- ADJUSTED STYLING WITH POPPINS AND TEMPORARY BLACK COLOR --- */
-            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Try 'Poppins Light', then 'Poppins', then generic sans-serif */
+            /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
+            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
             font-size: 10.5px;
-            color: #000000; /* TEMPORARY: Set to black so "Hello World" is visible on white browser background */
+            color: #FFFFFF; /* Set text color to white for your dark Storyline background */
             line-height: 1.4;
             text-align: left;
 
-            word-wrap: break-word;
-            box-sizing: border-box;
+            word-wrap: break-word; /* Ensures long words wrap correctly */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
         }
         #dynamicBodyContent {
             width: 100%; /* Make this div take the full width of the iframe */
             height: 100%; /* Make this div take the full height of the iframe */
-            box-sizing: border-box;
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
             padding: 10px; /* Add a little padding so text isn't stuck to edges */
         }
     </style>
 </head>
 <body>
-    <!-- This is the HTML element where your dynamic body text will be placed -->
-    <!-- For testing, we've added "Hello from Web Object!" directly here. -->
-    <div id="dynamicBodyContent">Hello from Web Object!</div>
+    <!-- This is the HTML element where your dynamic body text will be placed. -->
+    <!-- It is empty initially, and will be filled by the Storyline JavaScript. -->
+    <div id="dynamicBodyContent"></div>
 
     <script>
-        // This script listens for messages from the parent window (your Storyline course)
+        // This script listens for messages sent from the parent window (your Storyline course).
         window.addEventListener('message', function(event) {
-            // Security check: Ensure the message is from the correct origin.
-            // For Storyline published output, this usually matches the iframe's own origin.
+            // Security check: Ensure the message is from the same origin as the iframe itself.
+            // This prevents scripts from other domains from sending messages to this iframe.
             if (event.origin === new URL(document.location.href).origin) {
-                // Check if the message type is 'updateText' and targets 'bodyText'
+                // Check if the received message has the expected 'type' and 'target' identifiers.
                 if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
+                    // Get a reference to the specific div where the text will be updated.
                     const contentDiv = document.getElementById('dynamicBodyContent');
                     if (contentDiv) {
-                        // Update the text content of the div
+                        // Update the text content of the div with the text received from Storyline.
                         contentDiv.innerText = event.data.text;
                         console.log('Web Object: Successfully updated body text.');
-                        // After receiving content, change color back to white for Storyline
-                        document.body.style.color = '#FFFFFF'; // Change back to white after successful update
+                        // Ensure the text color is white after receiving content (redundant but safe)
+                        document.body.style.color = '#FFFFFF';
                     } else {
+                        // Log an error if the target div element is not found within the iframe.
                         console.error('Web Object: #dynamicBodyContent div not found.');
                     }
                 }
