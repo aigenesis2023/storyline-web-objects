@@ -7,27 +7,35 @@
     <!-- CRITICAL: Load Poppins font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        /* --- General Body/HTML Styling for the iframe content --- */
+        html, body {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevents scrollbars in the iframe */
-            background-color: transparent; /* Makes the iframe background transparent */
+            width: 100%; /* Force html and body to fill the entire iframe */
+            height: 100%; /* Force html and body to fill the entire iframe */
+            overflow: hidden; /* Prevents scrollbars within the iframe */
+            background-color: transparent; /* Makes the iframe background transparent in Storyline */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+        }
 
-            /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
+        /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
+        body {
             font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
             font-size: 10.5px;
             color: #FFFFFF; /* Set text color to white for your dark Storyline background */
             line-height: 1.4;
             text-align: left;
-
             word-wrap: break-word; /* Ensures long words wrap correctly */
-            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
-        }
-        #dynamicBodyContent {
-            width: 100%; /* Make this div take the full width of the iframe */
-            height: 100%; /* Make this div take the full height of the iframe */
-            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+            /* No width/height here, as html/body already define it */
             padding: 10px; /* Add a little padding so text isn't stuck to edges */
+        }
+
+        /* --- Dynamic Content Div Styling --- */
+        #dynamicBodyContent {
+            width: 100%; /* Make this div take the full width of its parent (body) */
+            height: 100%; /* Make this div take the full height of its parent (body) */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+            /* Padding already on body, no need to duplicate here unless specific inner padding is desired */
         }
     </style>
 </head>
