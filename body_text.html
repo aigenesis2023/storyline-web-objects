@@ -1,108 +1,67 @@
-// --- Storyline Player Access ---
-const player = GetPlayer();
-
-// --- Developer-Chosen Topic (Hardcoded for this published version) ---
-const currentTopic = "AI Awareness";
-
-// --- Dynamic Text Data (Pre-generated LLM Content) ---
-const dynamicTextData = {
-    "AI Awareness": {
-        "Slide 1 Heading (15)": "Intro to AI Power",
-        "Slide 1 Body (169)": "Dive into the transformative world of artificial intelligence. This module covers core concepts, ethical implications, and real-world applications across various industries, empowering you to navigate the future."
-    }
-};
-
-// --- Core Logic: Process and Inject Content ---
-if (dynamicTextData.hasOwnProperty(currentTopic)) {
-    const contentForTopic = dynamicTextData[currentTopic];
-
-    // Increased delay to 2000ms (2 seconds) for absolute maximum safety.
-    // This timeout gives Storyline's player ample time to load the Web Object iframe into the DOM and render its initial styles.
-    setTimeout(() => {
-        // --- Process Heading (via Storyline Variable) ---
-        const headingLabel = "Slide 1 Heading (15)";
-        if (contentForTopic.hasOwnProperty(headingLabel)) {
-            const headingTextValue = contentForTopic[headingLabel];
-            const match = headingLabel.match(/^(.+?)\s*\((\d+)\)$/);
-            if (match && match.length >= 2) {
-                const storylineHeadingVarNamePart = match[1];
-                const cleanedVariableName = storylineHeadingVarNamePart.replace(/\s/g, '');
-                player.SetVar(cleanedVariableName, headingTextValue);
-                console.log(`JS: Updated Storyline variable "${cleanedVariableName}" to: "${headingTextValue}"`);
-            } else {
-                console.warn(`JS: Heading label format mismatch for "${headingLabel}". Expected "Name (Count)".`);
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Body Text</title>
+    <!-- CRITICAL: Load Poppins font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- General Body/HTML Styling for the iframe content --- */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /* Force html and body to fill the entire iframe */
+            height: 100%; /* Force html and body to fill the entire iframe */
+            overflow: hidden; /* Prevents scrollbars within the iframe */
+            background-color: transparent; /* Makes the iframe background transparent in Storyline */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
         }
 
-        // --- Process Body Text (via Web Object using postMessage) ---
-        const bodyLabel = "Slide 1 Body (169)";
-        if (contentForTopic.hasOwnProperty(bodyLabel)) {
-            const bodyTextValue = contentForTopic[bodyLabel];
-
-            // --- CRITICAL: Target the outermost container of the Web Object. ---
-            // This is the div with data-model-id="61hQhFFdg5T" and class "slide-object slide-object-webobject"
-            const outermostWebObjectDiv = document.querySelector('div[data-model-id="61hQhFFdg5T"]');
-            let innerWebObjectDiv = null;
-            let webObjectIframe = null;
-
-            if (outermostWebObjectDiv) {
-                // Force the outermost div's dimensions, position, and visibility to the desired Storyline size.
-                // These X/Y values (122px, 312px) come from your Storyline editor screenshot's position.
-                // The width/height (249px, 88px) also come from your Storyline editor screenshot.
-                outermostWebObjectDiv.style.setProperty('width', '249px', 'important');
-                outermostWebObjectDiv.style.setProperty('height', '88px', 'important');
-                outermostWebObjectDiv.style.setProperty('top', '312px', 'important');  // Y coordinate from editor
-                outermostWebObjectDiv.style.setProperty('left', '122px', 'important'); // X coordinate from editor
-                outermostWebObjectDiv.style.setProperty('position', 'absolute', 'important'); // Ensure absolute positioning
-                outermostWebObjectDiv.style.setProperty('opacity', '1', 'important'); // Ensure it's fully visible
-                outermostWebObjectDiv.style.setProperty('transform', 'none', 'important'); // Crucial: Remove any scaling on this div
-                outermostWebObjectDiv.style.setProperty('overflow', 'visible', 'important'); // Ensure content isn't clipped
-
-                // Now, find the inner div that contains the iframe.
-                // This div has data-display-name="WebObjectSlideObject" and class "webobject is-scrollable"
-                innerWebObjectDiv = outermostWebObjectDiv.querySelector('div.webobject.is-scrollable[data-display-name="WebObjectSlideObject"]');
-            }
-
-            if (innerWebObjectDiv) {
-                // Force the inner div's dimensions to 100% of its (now correctly sized) parent.
-                // CRITICAL: Also remove the 'transform: scale' from this inner div!
-                innerWebObjectDiv.style.setProperty('width', '100%', 'important');
-                innerWebObjectDiv.style.setProperty('height', '100%', 'important');
-                innerWebObjectDiv.style.setProperty('transform', 'none', 'important'); // Crucial: Remove any scaling here!
-                innerWebObjectDiv.style.setProperty('overflow', 'visible', 'important'); // Ensure content isn't clipped
-
-                // Finally, find the iframe within the inner div.
-                webObjectIframe = innerWebObjectDiv.querySelector('iframe');
-            }
-
-            if (webObjectIframe && webObjectIframe.contentWindow) {
-                // Force the iframe itself to take up 100% of its parent's (now correctly sized) space.
-                webObjectIframe.style.setProperty('width', '100%', 'important');
-                webObjectIframe.style.setProperty('height', '100%', 'important');
-                webObjectIframe.style.setProperty('opacity', '1', 'important'); // Ensure iframe content is visible
-                webObjectIframe.style.setProperty('overflow', 'hidden', 'important'); // Prevent scrollbars inside iframe
-
-                // Get the origin of the iframe's source URL for postMessage security.
-                const iframeOrigin = new URL(webObjectIframe.src).origin;
-
-                // Send the body text to the iframe.
-                webObjectIframe.contentWindow.postMessage({
-                    type: 'updateText',
-                    target: 'bodyText',
-                    text: bodyTextValue
-                }, iframeOrigin);
-
-                console.log(`JS: Sent body text to Web Object: "${bodyTextValue.substring(0, 50)}..."`);
-                console.log(`JS: Forced outermost container dimensions to ${outermostWebObjectDiv.style.width} x ${outermostWebObjectDiv.style.height}.`);
-                console.log(`JS: Forced inner container dimensions to ${innerWebObjectDiv.style.width} x ${innerWebObjectDiv.style.height} (transform removed).`);
-                console.log(`JS: Forced Web Object iframe dimensions to ${webObjectIframe.style.width} x ${webObjectIframe.style.height}.`);
-
-            } else {
-                console.error("JS: Web Object iframe not found or not accessible. Ensure the Web Object is on the slide and its HTML structure is as expected.");
-            }
+        /* --- ADJUSTED STYLING WITH POPPINS AND WHITE COLOR --- */
+        body {
+            font-family: 'Poppins Light', 'Poppins', sans-serif; /* Fallback fonts for broader compatibility */
+            font-size: 10.5px;
+            color: #FFFFFF; /* Set text color to white for your dark Storyline background */
+            line-height: 1.4;
+            text-align: left;
+            word-wrap: break-word; /* Ensures long words wrap correctly */
+            padding: 10px; /* Add a little padding so text isn't stuck to edges */
         }
 
-    }, 2000); // Increased delay to 2 full seconds for maximum robustness against rendering race conditions.
-} else {
-    console.error(`JS: No content found in dynamicTextData for topic: "${currentTopic}". Check your JS data configuration.`);
-}
+        /* --- Dynamic Content Div Styling --- */
+        #dynamicBodyContent {
+            width: 100%; /* Make this div take the full width of its parent (body) */
+            height: 100%; /* Make this div take the full height of its parent (body) */
+            box-sizing: border-box; /* Includes padding/border in the element's total width/height */
+        }
+    </style>
+</head>
+<body>
+    <!-- This is the HTML element where your dynamic body text will be placed. -->
+    <!-- It is empty initially, and will be filled by the Storyline JavaScript. -->
+    <div id="dynamicBodyContent"></div>
+
+    <script>
+        // This script listens for messages sent from the parent window (your Storyline course).
+        window.addEventListener('message', function(event) {
+            // Security check: Ensure the message is from the same origin as the iframe itself.
+            if (event.origin === new URL(document.location.href).origin) {
+                // Check if the received message has the expected 'type' and 'target' identifiers.
+                if (event.data && event.data.type === 'updateText' && event.data.target === 'bodyText') {
+                    // Get a reference to the specific div where the text will be updated.
+                    const contentDiv = document.getElementById('dynamicBodyContent');
+                    if (contentDiv) {
+                        // Update the text content of the div with the text received from Storyline.
+                        contentDiv.innerText = event.data.text;
+                        console.log('Web Object: Successfully updated body text.');
+                        document.body.style.color = '#FFFFFF'; // Ensure color is white
+                    } else {
+                        console.error('Web Object: #dynamicBodyContent div not found.');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
